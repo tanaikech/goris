@@ -16,6 +16,9 @@ const (
 
 // dispres : Display results
 func dispres(r []string, c int) {
+	if len(r) < c {
+		c = len(r)
+	}
 	for i := 0; i < c; i++ {
 		fmt.Printf("%s\n", r[i])
 	}
@@ -47,7 +50,7 @@ func main() {
 	app.Author = "tanaike [ https://github.com/tanaikech/goris ] "
 	app.Email = "tanaike@hotmail.com"
 	app.Usage = "Search for images with Google Reverse Image Search."
-	app.Version = "1.0.0"
+	app.Version = "1.0.1"
 	app.Commands = []cli.Command{
 		{
 			Name:        "search",

@@ -54,8 +54,13 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 
 <a name="Update_History"></a>
 # Update History
+
 * v1.0.0 (April 26, 2017)
 
     Initial release.
+
+* v1.0.1 (May 16, 2017)
+    1. A bugfix
+        - When number of retrieved URLs is smaller than number of default output, an error had occurred. This was fixed. (Thank you! [Steve Davis](https://github.com/OptumCS))
 
 [TOP](#TOP)
