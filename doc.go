@@ -19,6 +19,12 @@ Download searched images from an image file. Following sample downloads 10 searc
 
 $ goris s -f [iamge file] -d -n 10
 
+Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.
+
+$ goris s -u [iamge URL] -w
+
+$ goris s -f [iamge file] -w
+
 ---------------------------------------------------------------
 */
 package main

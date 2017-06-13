@@ -32,12 +32,12 @@ func handler(c *cli.Context) {
 	}
 	var results []string
 	if len(c.String("fromurl")) > 0 && len(c.String("fromfile")) == 0 {
-		results = ris.DefImg().ImgFromURL(c.String("fromurl"))
+		results = ris.DefImg(c).ImgFromURL(c.String("fromurl"))
 	}
 	if len(c.String("fromurl")) == 0 && len(c.String("fromfile")) > 0 {
-		results = ris.DefImg().ImgFromFile(c.String("fromfile"))
+		results = ris.DefImg(c).ImgFromFile(c.String("fromfile"))
 	}
-	if c.Bool("download") && (len(c.String("fromurl")) > 0 || len(c.String("fromfile")) > 0) {
+	if c.Bool("download") && (len(c.String("fromurl")) > 0 || len(c.String("fromfile")) > 0) && !c.Bool("webpages") {
 		ris.Download(results, c.Int("number"))
 	}
 	dispres(results, c.Int("number"))
@@ -50,7 +50,7 @@ func main() {
 	app.Author = "tanaike [ https://github.com/tanaikech/goris ] "
 	app.Email = "tanaike@hotmail.com"
 	app.Usage = "Search for images with Google Reverse Image Search."
-	app.Version = "1.0.1"
+	app.Version = "1.1.0"
 	app.Commands = []cli.Command{
 		{
 			Name:        "search",
@@ -75,6 +75,10 @@ func main() {
 				cli.BoolFlag{
 					Name:  "download, d",
 					Usage: "Download images from retrieved URLs.",
+				},
+				cli.BoolFlag{
+					Name:  "webpages, w",
+					Usage: "This is boolean. Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.",
 				},
 			},
 		},

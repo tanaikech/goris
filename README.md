@@ -42,6 +42,16 @@ Download searched images from an image file. Following sample downloads 10 searc
 $ goris s -f [iamge file] -d -n 10
 ~~~
 
+Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.
+
+~~~bash
+$ goris s -u [iamge URL] -w
+~~~
+
+~~~bash
+$ goris s -f [iamge file] -w
+~~~
+
 <a name="Licence"></a>
 # Licence
 [MIT](LICENCE)
@@ -62,5 +72,10 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 * v1.0.1 (May 16, 2017)
     1. A bugfix
         - When number of retrieved URLs is smaller than number of default output, an error had occurred. This was fixed. (Thank you! [Steve Davis](https://github.com/OptumCS))
+
+* v1.1.0 (June 13, 2017)
+    1. Add option
+        - When images are matched to a searched image, web pages with matching images are retrieved. These are web pages displayed on Google top page. When this is not used, images are retrieved. This was added as a boolean option. (This was added by a request.)
+
 
 [TOP](#TOP)

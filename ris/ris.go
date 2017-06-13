@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/urfave/cli"
 )
 
 const (
@@ -35,13 +36,15 @@ type requestParams struct {
 
 // Imgdata : Image URL
 type Imgdata struct {
-	OU string `json:"ou"`
+	OU      string `json:"ou"`
+	WebPage bool
 }
 
 // DefImg : Initialize imagdata.
-func DefImg() *Imgdata {
-	i := &Imgdata{}
-	return i
+func DefImg(c *cli.Context) *Imgdata {
+	return &Imgdata{
+		WebPage: c.Bool("webpages"),
+	}
 }
 
 // fetchURL : Fetch method
@@ -86,18 +89,22 @@ func (im *Imgdata) ImgFromURL(searchimage string) []string {
 	}
 	defer res.Body.Close()
 	doc, _ := goquery.NewDocumentFromResponse(res)
-	doc.Find(".iu-card-header").Each(func(_ int, s *goquery.Selection) {
-		url, _ = s.Attr("href")
-	})
-	r.URL = baseurl + url
-	r.Client = &http.Client{Timeout: time.Duration(10) * time.Second}
-	res = r.fetchURL()
-	doc, _ = goquery.NewDocumentFromResponse(res)
 	var ar []string
-	doc.Find(".rg_meta").Each(func(_ int, s *goquery.Selection) {
-		json.Unmarshal([]byte(s.Text()), &im)
-		ar = append(ar, im.OU)
-	})
+	if im.WebPage {
+		ar = getWebPages(doc)
+	} else {
+		doc.Find(".iu-card-header").Each(func(_ int, s *goquery.Selection) {
+			url, _ = s.Attr("href")
+		})
+		r.URL = baseurl + url
+		r.Client = &http.Client{Timeout: time.Duration(10) * time.Second}
+		res = r.fetchURL()
+		doc, _ = goquery.NewDocumentFromResponse(res)
+		doc.Find(".rg_meta").Each(func(_ int, s *goquery.Selection) {
+			json.Unmarshal([]byte(s.Text()), &im)
+			ar = append(ar, im.OU)
+		})
+	}
 	return ar
 }
 
@@ -146,18 +153,22 @@ func (im *Imgdata) ImgFromFile(file string) []string {
 	}
 	defer res.Body.Close()
 	doc, _ := goquery.NewDocumentFromResponse(res)
-	doc.Find(".iu-card-header").Each(func(_ int, s *goquery.Selection) {
-		url, _ = s.Attr("href")
-	})
-	r.URL = baseurl + url
-	r.Client = &http.Client{Timeout: time.Duration(10) * time.Second}
-	res = r.fetchURL()
-	doc, _ = goquery.NewDocumentFromResponse(res)
 	var ar []string
-	doc.Find(".rg_meta").Each(func(_ int, s *goquery.Selection) {
-		json.Unmarshal([]byte(s.Text()), &im)
-		ar = append(ar, im.OU)
-	})
+	if im.WebPage {
+		ar = getWebPages(doc)
+	} else {
+		doc.Find(".iu-card-header").Each(func(_ int, s *goquery.Selection) {
+			url, _ = s.Attr("href")
+		})
+		r.URL = baseurl + url
+		r.Client = &http.Client{Timeout: time.Duration(10) * time.Second}
+		res = r.fetchURL()
+		doc, _ = goquery.NewDocumentFromResponse(res)
+		doc.Find(".rg_meta").Each(func(_ int, s *goquery.Selection) {
+			json.Unmarshal([]byte(s.Text()), &im)
+			ar = append(ar, im.OU)
+		})
+	}
 	return ar
 }
 
@@ -205,4 +216,16 @@ func Download(r []string, c int) {
 	}
 	close(dlch)
 	wg.Wait()
+}
+
+// getWebPages : Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.
+func getWebPages(doc *goquery.Document) []string {
+	var ar []string
+	doc.Find("h3.r").Each(func(i int, s *goquery.Selection) {
+		s.Find("a").Each(func(_ int, s *goquery.Selection) {
+			url, _ := s.Attr("href")
+			ar = append(ar, url)
+		})
+	})
+	return ar
 }
