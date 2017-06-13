@@ -32,10 +32,10 @@ func handler(c *cli.Context) {
 	}
 	var results []string
 	if len(c.String("fromurl")) > 0 && len(c.String("fromfile")) == 0 {
-		results = ris.DefImg(c).ImgFromURL(c.String("fromurl"))
+		results = ris.DefImg(c.Bool("webpages")).ImgFromURL(c.String("fromurl"))
 	}
 	if len(c.String("fromurl")) == 0 && len(c.String("fromfile")) > 0 {
-		results = ris.DefImg(c).ImgFromFile(c.String("fromfile"))
+		results = ris.DefImg(c.Bool("webpages")).ImgFromFile(c.String("fromfile"))
 	}
 	if c.Bool("download") && (len(c.String("fromurl")) > 0 || len(c.String("fromfile")) > 0) && !c.Bool("webpages") {
 		ris.Download(results, c.Int("number"))

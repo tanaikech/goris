@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/urfave/cli"
 )
 
 const (
@@ -41,9 +40,9 @@ type Imgdata struct {
 }
 
 // DefImg : Initialize imagdata.
-func DefImg(c *cli.Context) *Imgdata {
+func DefImg(webpages bool) *Imgdata {
 	return &Imgdata{
-		WebPage: c.Bool("webpages"),
+		WebPage: webpages,
 	}
 }
 
