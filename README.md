@@ -27,29 +27,29 @@ $ go get -u github.com/tanaikech/goris
 Search images from an image file. You can select number of output URLs using ``-n``. The maximum number of output URLs is 100.
 
 ~~~bash
-$ goris s -f [iamge file] -n 50
+$ goris s -f [image file] -n 50
 ~~~
 
 Search images from an image URL.
 
 ~~~bash
-$ goris s -u [iamge URL]
+$ goris s -u [image URL]
 ~~~
 
 Download searched images from an image file. Following sample downloads 10 searched images using an image file.
 
 ~~~bash
-$ goris s -f [iamge file] -d -n 10
+$ goris s -f [image file] -d -n 10
 ~~~
 
 Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.
 
 ~~~bash
-$ goris s -u [iamge URL] -w
+$ goris s -u [image URL] -w
 ~~~
 
 ~~~bash
-$ goris s -f [iamge file] -w
+$ goris s -f [image file] -w
 ~~~
 
 <a name="Licence"></a>
