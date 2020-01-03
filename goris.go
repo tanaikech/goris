@@ -25,7 +25,7 @@ func dispres(r []string, c int) {
 }
 
 // handler : Handler of goris
-func handler(c *cli.Context) {
+func handler(c *cli.Context) error {
 	if len(c.String("fromurl")) == 0 && len(c.String("fromfile")) == 0 {
 		fmt.Fprintf(os.Stderr, "Error: No parameters. You can see help by '$ %s -h'\n", appname)
 		os.Exit(1)
@@ -41,17 +41,19 @@ func handler(c *cli.Context) {
 		ris.Download(results, c.Int("number"))
 	}
 	dispres(results, c.Int("number"))
+	return nil
 }
 
 // main : Main of goris
 func main() {
 	app := cli.NewApp()
 	app.Name = appname
-	app.Author = "tanaike [ https://github.com/tanaikech/goris ] "
-	app.Email = "tanaike@hotmail.com"
+	app.Authors = []*cli.Author{
+		{Name: "tanaike [ https://github.com/tanaikech/goris ] ", Email: "tanaike@hotmail.com"},
+	}
 	app.Usage = "Search for images with Google Reverse Image Search."
-	app.Version = "1.1.0"
-	app.Commands = []cli.Command{
+	app.Version = "1.1.1"
+	app.Commands = []*cli.Command{
 		{
 			Name:        "search",
 			Aliases:     []string{"s"},
@@ -59,26 +61,31 @@ func main() {
 			Description: "Do search images.",
 			Action:      handler,
 			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "fromurl, u",
-					Usage: "Reverse Image Search from an URL.",
+				&cli.StringFlag{
+					Name:    "fromurl, u",
+					Aliases: []string{"u"},
+					Usage:   "Reverse Image Search from an URL.",
 				},
-				cli.StringFlag{
-					Name:  "fromfile, f",
-					Usage: "Reverse Image Search from an image file.",
+				&cli.StringFlag{
+					Name:    "fromfile, f",
+					Aliases: []string{"f"},
+					Usage:   "Reverse Image Search from an image file.",
 				},
-				cli.IntFlag{
-					Name:  "number, n",
-					Usage: "Number of retrieved image URLs. ( 1 - 100 )",
-					Value: 10,
+				&cli.IntFlag{
+					Name:    "number, n",
+					Aliases: []string{"n"},
+					Usage:   "Number of retrieved image URLs. ( 1 - 100 )",
+					Value:   10,
 				},
-				cli.BoolFlag{
-					Name:  "download, d",
-					Usage: "Download images from retrieved URLs.",
+				&cli.BoolFlag{
+					Name:    "download, d",
+					Aliases: []string{"d"},
+					Usage:   "Download images from retrieved URLs.",
 				},
-				cli.BoolFlag{
-					Name:  "webpages, w",
-					Usage: "This is boolean. Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.",
+				&cli.BoolFlag{
+					Name:    "webpages, w",
+					Aliases: []string{"w"},
+					Usage:   "This is boolean. Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.",
 				},
 			},
 		},
