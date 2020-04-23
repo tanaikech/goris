@@ -26,34 +26,47 @@ func dispres(r []string, c int) {
 
 // handler : Handler of goris
 func handler(c *cli.Context) error {
+	n := c.Int("number")
+	if n > 100 {
+		n = 100
+	}
 	if len(c.String("fromurl")) == 0 && len(c.String("fromfile")) == 0 {
-		fmt.Fprintf(os.Stderr, "Error: No parameters. You can see help by '$ %s -h'\n", appname)
-		os.Exit(1)
+		return fmt.Errorf("no parameters. You can see help by '$ %s -h'", appname)
 	}
 	var results []string
+	var err error
 	if len(c.String("fromurl")) > 0 && len(c.String("fromfile")) == 0 {
-		results = ris.DefImg(c.Bool("webpages")).ImgFromURL(c.String("fromurl"))
+		results, err = ris.DefImg(c.Bool("webpages")).ImgFromURL(c.String("fromurl"))
+		if err != nil {
+			return err
+		}
 	}
 	if len(c.String("fromurl")) == 0 && len(c.String("fromfile")) > 0 {
-		results = ris.DefImg(c.Bool("webpages")).ImgFromFile(c.String("fromfile"))
+		results, err = ris.DefImg(c.Bool("webpages")).ImgFromFile(c.String("fromfile"))
+		if err != nil {
+			return err
+		}
 	}
 	if c.Bool("download") && (len(c.String("fromurl")) > 0 || len(c.String("fromfile")) > 0) && !c.Bool("webpages") {
-		ris.Download(results, c.Int("number"))
+		err := ris.Download(results, n)
+		if err != nil {
+			return err
+		}
 	}
-	dispres(results, c.Int("number"))
+	dispres(results, n)
 	return nil
 }
 
-// main : Main of goris
-func main() {
-	app := cli.NewApp()
-	app.Name = appname
-	app.Authors = []*cli.Author{
+// createHelp : Create help document.
+func createHelp() *cli.App {
+	a := cli.NewApp()
+	a.Name = appname
+	a.Authors = []*cli.Author{
 		{Name: "tanaike [ https://github.com/tanaikech/goris ] ", Email: "tanaike@hotmail.com"},
 	}
-	app.Usage = "Search for images with Google Reverse Image Search."
-	app.Version = "1.1.1"
-	app.Commands = []*cli.Command{
+	a.Usage = "Search for images with Google Reverse Image Search."
+	a.Version = "2.0.0"
+	a.Commands = []*cli.Command{
 		{
 			Name:        "search",
 			Aliases:     []string{"s"},
@@ -90,5 +103,15 @@ func main() {
 			},
 		},
 	}
-	app.Run(os.Args)
+	return a
+}
+
+// main : Main of goris
+func main() {
+	a := createHelp()
+	err := a.Run(os.Args)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }

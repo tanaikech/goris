@@ -4,7 +4,6 @@ package ris
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -13,6 +12,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -47,27 +48,83 @@ func DefImg(webpages bool) *Imgdata {
 }
 
 // fetchURL : Fetch method
-func (r *requestParams) fetchURL() *http.Response {
+func (r *requestParams) fetchURL() (*http.Response, error) {
 	req, err := http.NewRequest(
 		r.Method,
 		r.URL,
 		r.Data,
 	)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v. ", err)
-		os.Exit(1)
+		return nil, err
 	}
 	if len(r.Contenttype) > 0 {
 		req.Header.Set("Content-Type", r.Contenttype)
 	}
 	req.Header.Set("User-Agent", "Mozilla/5.0 Firefox/26.0")
 	res, _ := r.Client.Do(req)
-	return res
+	return res, nil
+}
+
+// getURLs : Retrieve URLs.
+func (r *requestParams) getURLs(res *http.Response, imWebPage bool) ([]string, error) {
+	var url string
+	var chk bool
+	var ar []string
+	doc, err := goquery.NewDocumentFromResponse(res)
+	if err != nil {
+		return nil, err
+	}
+	doc.Find("g-section-with-header").Each(func(_ int, s *goquery.Selection) {
+		url, chk = s.Find("div").Find("h3").Find("a").Attr("href")
+		if !chk {
+			fmt.Fprint(os.Stderr, "Error: Base URL cannot be retrieved. The specification of Google side might be changed.\n")
+			os.Exit(1)
+		}
+	})
+	r.URL = baseurl + url
+	r.Client = &http.Client{Timeout: time.Duration(10) * time.Second}
+	res, err = r.fetchURL()
+	if err != nil {
+		return nil, err
+	}
+	doc, err = goquery.NewDocumentFromResponse(res)
+	if err != nil {
+		return nil, err
+	}
+	reg1 := regexp.MustCompile("key: 'ds:1'")
+	reg2 := regexp.MustCompile("\"(https?:\\/\\/.+?)\",\\d+,\\d+")
+	reg3 := regexp.MustCompile("https:\\/\\/encrypted\\-tbn0")
+	reg4 := regexp.MustCompile("\"(https?:\\/\\/.+?)\"")
+	doc.Find("script").Each(func(_ int, s *goquery.Selection) {
+		if reg1.MatchString(s.Text()) {
+			var urls [][]string
+			if imWebPage {
+				strInURL := reg2.ReplaceAllString(s.Text(), "")
+				urls = reg4.FindAllStringSubmatch(strInURL, -1)
+			} else {
+				urls = reg2.FindAllStringSubmatch(s.Text(), -1)
+			}
+			for _, u := range urls {
+				if !reg3.MatchString(u[1]) {
+					ss, err := strconv.Unquote(`"` + u[1] + `"`)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "Error: %v.\n", err)
+						os.Exit(1)
+					}
+					ar = append(ar, ss)
+				}
+			}
+		}
+	})
+	if len(ar) == 0 {
+		return nil, errors.New("Data couldn't be retrieved")
+	}
+	return ar, nil
 }
 
 // ImgFromURL : Search images from an image URL
-func (im *Imgdata) ImgFromURL(searchimage string) []string {
-	var url string
+func (im *Imgdata) ImgFromURL(searchimage string) ([]string, error) {
+	var err error
 	r := &requestParams{
 		Method: "GET",
 		URL:    baseurl + "/searchbyimage?&image_url=" + searchimage,
@@ -79,53 +136,39 @@ func (im *Imgdata) ImgFromURL(searchimage string) []string {
 	}
 	var res *http.Response
 	for {
-		res = r.fetchURL()
+		res, err = r.fetchURL()
+		if err != nil {
+			return nil, err
+		}
 		if res.StatusCode == 200 {
 			break
 		}
 		reurl, _ := res.Location()
 		r.URL = reurl.String()
 	}
-	defer res.Body.Close()
-	doc, _ := goquery.NewDocumentFromResponse(res)
-	var ar []string
-	if im.WebPage {
-		ar = getWebPages(doc)
-	} else {
-		doc.Find(".iu-card-header").Each(func(_ int, s *goquery.Selection) {
-			url, _ = s.Attr("href")
-		})
-		r.URL = baseurl + url
-		r.Client = &http.Client{Timeout: time.Duration(10) * time.Second}
-		res = r.fetchURL()
-		doc, _ = goquery.NewDocumentFromResponse(res)
-		doc.Find(".rg_meta").Each(func(_ int, s *goquery.Selection) {
-			json.Unmarshal([]byte(s.Text()), &im)
-			ar = append(ar, im.OU)
-		})
+	ar, err := r.getURLs(res, im.WebPage)
+	if err != nil {
+		return nil, err
 	}
-	return ar
+	return ar, nil
 }
 
 // ImgFromFile : Search images from an image file
-func (im *Imgdata) ImgFromFile(file string) []string {
-	var url string
+func (im *Imgdata) ImgFromFile(file string) ([]string, error) {
+	var err error
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
 	fs, err := os.Open(file)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v. ", err)
-		os.Exit(1)
+		return nil, err
 	}
 	defer fs.Close()
 	data, err := w.CreateFormFile("encoded_image", file)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v. ", err)
-		os.Exit(1)
+		return nil, err
 	}
 	if _, err = io.Copy(data, fs); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v. ", err)
-		os.Exit(1)
+		return nil, err
 	}
 	w.Close()
 	r := &requestParams{
@@ -140,7 +183,10 @@ func (im *Imgdata) ImgFromFile(file string) []string {
 	}
 	var res *http.Response
 	for {
-		res = r.fetchURL()
+		res, err = r.fetchURL()
+		if err != nil {
+			return nil, err
+		}
 		if res.StatusCode == 200 {
 			break
 		}
@@ -150,44 +196,33 @@ func (im *Imgdata) ImgFromFile(file string) []string {
 		r.Data = nil
 		r.Contenttype = ""
 	}
-	defer res.Body.Close()
-	doc, _ := goquery.NewDocumentFromResponse(res)
-	var ar []string
-	if im.WebPage {
-		ar = getWebPages(doc)
-	} else {
-		doc.Find(".iu-card-header").Each(func(_ int, s *goquery.Selection) {
-			url, _ = s.Attr("href")
-		})
-		r.URL = baseurl + url
-		r.Client = &http.Client{Timeout: time.Duration(10) * time.Second}
-		res = r.fetchURL()
-		doc, _ = goquery.NewDocumentFromResponse(res)
-		doc.Find(".rg_meta").Each(func(_ int, s *goquery.Selection) {
-			json.Unmarshal([]byte(s.Text()), &im)
-			ar = append(ar, im.OU)
-		})
+	ar, err := r.getURLs(res, im.WebPage)
+	if err != nil {
+		return nil, err
 	}
-	return ar
+	return ar, nil
 }
 
 // Download : Download image files from searched image URLs
-func Download(r []string, c int) {
+func Download(r []string, c int) error {
 	var wg sync.WaitGroup
 	dlch := make(chan string, len(r))
 	workers := 2
+	reg := regexp.MustCompile("\\?.+")
 	for i := 0; i < workers; i++ {
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, dlch chan string) {
 			defer wg.Done()
 			var res *http.Response
+			var err error
 			for {
 				dlurl, fin := <-dlch
 				if !fin {
 					return
 				}
-				filename := filepath.Base(dlurl)
-				conv := strings.Replace(strings.TrimSpace(dlurl), filename, "", -1)
+				fname := reg.ReplaceAllString(dlurl, "")
+				filename := filepath.Base(fname)
+				conv := strings.Replace(strings.TrimSpace(fname), filename, "", -1)
 				conv = strings.Replace(strings.TrimSpace(conv), "http://", "", -1)
 				conv = strings.Replace(strings.TrimSpace(conv), "https://", "", -1)
 				conv = strings.Replace(strings.TrimSpace(conv), "/", "_", -1)
@@ -197,17 +232,21 @@ func Download(r []string, c int) {
 					Method: "GET",
 					URL:    dlurl,
 					Data:   nil,
-					Client: &http.Client{Timeout: time.Duration(10) * time.Second},
+					Client: &http.Client{Timeout: time.Duration(100) * time.Second},
 				}
-				res = r.fetchURL()
+				res, err = r.fetchURL()
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error: %v. ", err)
+					os.Exit(1)
+				}
 				body, err := ioutil.ReadAll(res.Body)
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "Error: %v. ", err)
 					os.Exit(1)
 				}
 				ioutil.WriteFile(conv, body, 0777)
+				defer res.Body.Close()
 			}
-			defer res.Body.Close()
 		}(&wg, dlch)
 	}
 	for i := 0; i < c; i++ {
@@ -215,16 +254,5 @@ func Download(r []string, c int) {
 	}
 	close(dlch)
 	wg.Wait()
-}
-
-// getWebPages : Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.
-func getWebPages(doc *goquery.Document) []string {
-	var ar []string
-	doc.Find("h3.r").Each(func(i int, s *goquery.Selection) {
-		s.Find("a").Each(func(_ int, s *goquery.Selection) {
-			url, _ := s.Attr("href")
-			ar = append(ar, url)
-		})
-	})
-	return ar
+	return nil
 }

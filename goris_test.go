@@ -9,6 +9,6 @@ import (
 func TestImgFromURL(t *testing.T) {
 	imageurl := "https://github.com/tanaikech/goris/blob/master/myavatar.png?raw=true"
 	webpages := false
-	results := ris.DefImg(webpages).ImgFromURL(imageurl)
+	results, _ := ris.DefImg(webpages).ImgFromURL(imageurl)
 	t.Log(results)
 }

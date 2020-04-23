@@ -27,7 +27,7 @@ $ go get -u github.com/tanaikech/goris
 
 # Usage
 
-Search images from an image file. You can select number of output URLs using `-n`. The maximum number of output URLs is 100.
+Search images from an image file. You can select number of output URLs using `-n`. The maximum number of output URLs is 100. (The current default value is 10. So when `-n` is not used, 10 URLs are returned.)
 
 ```bash
 $ goris s -f [image file] -n 50
@@ -91,5 +91,11 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 - v1.1.1 (January 3, 2020)
 
   1. It seems that the specification of `github.com/urfave/cli` was changed by the update of [https://github.com/urfave/cli](https://github.com/urfave/cli). By this, when `go get -u github.com/tanaikech/goris` is run, an error occurred. So this error was removed.
+
+<a name="v200"></a>
+
+- v2.0.0 (April 23, 2020)
+
+  1. The specification for running the reverse image search was changed at Google side. By this, this application was also changed.
 
 [TOP](#TOP)
