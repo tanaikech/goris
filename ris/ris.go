@@ -60,7 +60,7 @@ func (r *requestParams) fetchURL() (*http.Response, error) {
 	if len(r.Contenttype) > 0 {
 		req.Header.Set("Content-Type", r.Contenttype)
 	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 Firefox/26.0")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36")
 	res, _ := r.Client.Do(req)
 	return res, nil
 }
@@ -70,12 +70,12 @@ func (r *requestParams) getURLs(res *http.Response, imWebPage bool) ([]string, e
 	var url string
 	var chk bool
 	var ar []string
-	doc, err := goquery.NewDocumentFromResponse(res)
+	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		return nil, err
 	}
 	doc.Find("g-section-with-header").Each(func(_ int, s *goquery.Selection) {
-		url, chk = s.Find("div").Find("h3").Find("a").Attr("href")
+		url, chk = s.Find("div").Find("title-with-lhs-icon").Find("a").Attr("href")
 		if !chk {
 			fmt.Fprint(os.Stderr, "Error: Base URL cannot be retrieved. The specification of Google side might be changed.\n")
 			os.Exit(1)
@@ -87,13 +87,13 @@ func (r *requestParams) getURLs(res *http.Response, imWebPage bool) ([]string, e
 	if err != nil {
 		return nil, err
 	}
-	doc, err = goquery.NewDocumentFromResponse(res)
+	doc, err = goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		return nil, err
 	}
 	reg1 := regexp.MustCompile("key: 'ds:1'")
 	reg2 := regexp.MustCompile("\"(https?:\\/\\/.+?)\",\\d+,\\d+")
-	reg3 := regexp.MustCompile("https:\\/\\/encrypted\\-tbn0")
+	reg3 := regexp.MustCompile(`https:\/\/encrypted\-tbn0`)
 	reg4 := regexp.MustCompile("\"(https?:\\/\\/.+?)\"")
 	doc.Find("script").Each(func(_ int, s *goquery.Selection) {
 		if reg1.MatchString(s.Text()) {
@@ -107,17 +107,15 @@ func (r *requestParams) getURLs(res *http.Response, imWebPage bool) ([]string, e
 			for _, u := range urls {
 				if !reg3.MatchString(u[1]) {
 					ss, err := strconv.Unquote(`"` + u[1] + `"`)
-					if err != nil {
-						fmt.Fprintf(os.Stderr, "Error: %v.\n", err)
-						os.Exit(1)
+					if err == nil {
+						ar = append(ar, ss)
 					}
-					ar = append(ar, ss)
 				}
 			}
 		}
 	})
 	if len(ar) == 0 {
-		return nil, errors.New("Data couldn't be retrieved")
+		return nil, errors.New("data couldn't be retrieved")
 	}
 	return ar, nil
 }
@@ -127,7 +125,7 @@ func (im *Imgdata) ImgFromURL(searchimage string) ([]string, error) {
 	var err error
 	r := &requestParams{
 		Method: "GET",
-		URL:    baseurl + "/searchbyimage?&image_url=" + searchimage,
+		URL:    baseurl + "/searchbyimage?image_url=" + searchimage,
 		Data:   nil,
 		Client: &http.Client{
 			Timeout:       time.Duration(10) * time.Second,
@@ -208,7 +206,7 @@ func Download(r []string, c int) error {
 	var wg sync.WaitGroup
 	dlch := make(chan string, len(r))
 	workers := 2
-	reg := regexp.MustCompile("\\?.+")
+	reg := regexp.MustCompile(`\?.+`)
 	for i := 0; i < workers; i++ {
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, dlch chan string) {

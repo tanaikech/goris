@@ -3,11 +3,12 @@ package main
 import (
 	"testing"
 
-	"github.com/tanaikech/goris/ris"
+	"goris/ris"
 )
 
 func TestImgFromURL(t *testing.T) {
-	imageurl := "https://github.com/tanaikech/goris/blob/master/myavatar.png?raw=true"
+	// This sample image is a logo of Stackoverflow. https://stackoverflow.design/brand/logo/
+	imageurl := "https://stackoverflow.design/assets/img/logos/so/logo-stackoverflow.png"
 	webpages := false
 	results, _ := ris.DefImg(webpages).ImgFromURL(imageurl)
 	t.Log(results)

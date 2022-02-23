@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/tanaikech/goris/ris"
+	"goris/ris"
+
 	"github.com/urfave/cli"
 )
 
@@ -61,44 +62,40 @@ func handler(c *cli.Context) error {
 func createHelp() *cli.App {
 	a := cli.NewApp()
 	a.Name = appname
-	a.Authors = []*cli.Author{
+	a.Authors = []cli.Author{
 		{Name: "tanaike [ https://github.com/tanaikech/goris ] ", Email: "tanaike@hotmail.com"},
 	}
 	a.Usage = "Search for images with Google Reverse Image Search."
-	a.Version = "2.0.0"
-	a.Commands = []*cli.Command{
+	a.Version = "3.0.0"
+
+	a.Commands = []cli.Command{
 		{
 			Name:        "search",
 			Aliases:     []string{"s"},
-			Usage:       "[ " + appname + " s -u URL ] or [ " + appname + " -f file ]",
+			Usage:       "[ " + appname + " s -u URL ] or [ " + appname + " s -f file ]",
 			Description: "Do search images.",
 			Action:      handler,
 			Flags: []cli.Flag{
 				&cli.StringFlag{
-					Name:    "fromurl, u",
-					Aliases: []string{"u"},
-					Usage:   "Reverse Image Search from an URL.",
+					Name:  "fromurl, u",
+					Usage: "Reverse Image Search from an URL.",
 				},
 				&cli.StringFlag{
-					Name:    "fromfile, f",
-					Aliases: []string{"f"},
-					Usage:   "Reverse Image Search from an image file.",
+					Name:  "fromfile, f",
+					Usage: "Reverse Image Search from an image file.",
 				},
 				&cli.IntFlag{
-					Name:    "number, n",
-					Aliases: []string{"n"},
-					Usage:   "Number of retrieved image URLs. ( 1 - 100 )",
-					Value:   10,
+					Name:  "number, n",
+					Usage: "Number of retrieved image URLs. ( 1 - 100 )",
+					Value: 10,
 				},
 				&cli.BoolFlag{
-					Name:    "download, d",
-					Aliases: []string{"d"},
-					Usage:   "Download images from retrieved URLs.",
+					Name:  "download, d",
+					Usage: "Download images from retrieved URLs.",
 				},
 				&cli.BoolFlag{
-					Name:    "webpages, w",
-					Aliases: []string{"w"},
-					Usage:   "This is boolean. Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.",
+					Name:  "webpages, w",
+					Usage: "This is boolean. Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.",
 				},
 			},
 		},

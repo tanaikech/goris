@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/tanaikech/goris.svg?branch=master)](https://travis-ci.org/tanaikech/goris)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENCE)
 
-<a name="TOP"></a>
+<a name="top"></a>
 
 # Overview
 
@@ -22,7 +22,7 @@ or
 Use go get.
 
 ```bash
-$ go get -u github.com/tanaikech/goris
+$ go install github.com/tanaikech/goris@latest
 ```
 
 # Usage
@@ -98,4 +98,10 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 
   1. The specification for running the reverse image search was changed at Google side. By this, this application was also changed.
 
-[TOP](#TOP)
+<a name="v300"></a>
+
+- v3.0.0 (February 23, 2022)
+
+  1. The specification for running the reverse image search was changed at Google side. By this, this application was also changed.
+
+[TOP](#top)
