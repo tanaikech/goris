@@ -1,6 +1,5 @@
 # goris
 
-[![Build Status](https://travis-ci.com/tanaikech/goris.svg?branch=master)](https://travis-ci.com/tanaikech/goris)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENCE)
 
 <a name="top"></a>
@@ -103,6 +102,5 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 - v3.0.0 (February 23, 2022)
 
   1. The specification for running the reverse image search was changed at Google side. By this, this application was also changed.
-
 
 [TOP](#top)
