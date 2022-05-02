@@ -92,23 +92,31 @@ func (r *requestParams) getURLs(res *http.Response, imWebPage bool) ([]string, e
 		return nil, err
 	}
 	reg1 := regexp.MustCompile("key: 'ds:1'")
-	reg2 := regexp.MustCompile("\"(https?:\\/\\/.+?)\",\\d+,\\d+")
+	reg2 := regexp.MustCompile(`"(https?:\/\/.+?)",\d+,\d+`)
 	reg3 := regexp.MustCompile(`https:\/\/encrypted\-tbn0`)
-	reg4 := regexp.MustCompile("\"(https?:\\/\\/.+?)\"")
+	reg4 := regexp.MustCompile(`"(https?:\/\/.+?)"`)
+	reg5 := regexp.MustCompile(`https?:\/\/.+?\.jpg|https?:\/\/.+?\.png|https?:\/\/.+?\.gif`)
 	doc.Find("script").Each(func(_ int, s *goquery.Selection) {
 		if reg1.MatchString(s.Text()) {
 			var urls [][]string
 			if imWebPage {
-				strInURL := reg2.ReplaceAllString(s.Text(), "")
-				urls = reg4.FindAllStringSubmatch(strInURL, -1)
+				urls = reg4.FindAllStringSubmatch(s.Text(), -1)
+				for _, u := range urls {
+					if !reg3.MatchString(u[1]) && !reg5.MatchString(u[0]) {
+						ss, err := strconv.Unquote(`"` + u[1] + `"`)
+						if err == nil {
+							ar = append(ar, ss)
+						}
+					}
+				}
 			} else {
 				urls = reg2.FindAllStringSubmatch(s.Text(), -1)
-			}
-			for _, u := range urls {
-				if !reg3.MatchString(u[1]) {
-					ss, err := strconv.Unquote(`"` + u[1] + `"`)
-					if err == nil {
-						ar = append(ar, ss)
+				for _, u := range urls {
+					if !reg3.MatchString(u[1]) {
+						ss, err := strconv.Unquote(`"` + u[1] + `"`)
+						if err == nil {
+							ar = append(ar, ss)
+						}
 					}
 				}
 			}

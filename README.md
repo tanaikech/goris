@@ -104,4 +104,10 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 
   1. The specification for running the reverse image search was changed at Google side. By this, this application was also changed.
 
+<a name="v301"></a>
+
+- v3.0.1 (May 2, 2022)
+
+  1. About the option `-w`, a bug was resolved. By this, the URLs of the related Web site are returned. As the default, 10 URLs are returned. If you want to retrieve more, please use the option `-n` like `-n 20`.
+
 [TOP](#top)

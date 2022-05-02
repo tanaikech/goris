@@ -4,8 +4,7 @@ go 1.17
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
-	github.com/tanaikech/goris v2.0.0+incompatible
-	github.com/urfave/cli v1.22.5
+	github.com/urfave/cli v1.22.8
 )
 
 require (
