@@ -110,4 +110,10 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 
   1. About the option `-w`, a bug was resolved. By this, the URLs of the related Web site are returned. As the default, 10 URLs are returned. If you want to retrieve more, please use the option `-n` like `-n 20`.
 
+<a name="v302"></a>
+
+- v3.0.2 (February 2, 2023)
+
+  1. Modified go.mod and go.sum.
+
 [TOP](#top)
