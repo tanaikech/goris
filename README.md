@@ -25,6 +25,13 @@ Use go get.
 $ go install github.com/tanaikech/goris@latest
 ```
 
+# IMPORTANT
+20230406: In the current stage, the specification for running the reverse image search was changed at Google side. I could modify the script for searching the images using an image URL. But, I have still not modified the script for searching the images using an image file. I'm sorry for this. Now, I am analyzing. When I could do it, I would like to modify this. So, in the current stage, please use the following command.
+
+```bash
+$ goris s -u [image URL]
+```
+
 # Usage
 
 Search images from an image file. You can select number of output URLs using `-n`. The maximum number of output URLs is 100. (The current default value is 10. So when `-n` is not used, 10 URLs are returned.)
@@ -126,7 +133,7 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 
 - v3.0.4 (April 6, 2023)
 
-  1. The specification for running the reverse image search was changed at Google side. By this, this application was also changed. But, in the current stage, an image file in the local PC cannot be searched while an image URL can be searched. Now, I am analizing. When I could do it, I would like to modify this. So, in the current stage, please use the following command.
+  1. The specification for running the reverse image search was changed at Google side. By this, this application was also changed. But, in the current stage, an image file in the local PC cannot be searched while an image URL can be searched. Now, I am analyzing. When I could do it, I would like to modify this. So, in the current stage, please use the following command.
 
 	```bash
 	$ goris s -u URL
