@@ -122,4 +122,14 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 
   1. Rebuild with the latest version.
 
+<a name="v304"></a>
+
+- v3.0.4 (April 6, 2023)
+
+  1. The specification for running the reverse image search was changed at Google side. By this, this application was also changed. But, in the current stage, an image file in the local PC cannot be searched while an image URL can be searched. Now, I am analizing. When I could do it, I would like to modify this. So, in the current stage, please use the following command.
+
+	```bash
+	$ goris s -u URL
+	```
+
 [TOP](#top)

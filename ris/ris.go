@@ -67,27 +67,8 @@ func (r *requestParams) fetchURL() (*http.Response, error) {
 
 // getURLs : Retrieve URLs.
 func (r *requestParams) getURLs(res *http.Response, imWebPage bool) ([]string, error) {
-	var url string
-	var chk bool
 	var ar []string
 	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	doc.Find("g-section-with-header").Each(func(_ int, s *goquery.Selection) {
-		url, chk = s.Find("div").Find("title-with-lhs-icon").Find("a").Attr("href")
-		if !chk {
-			fmt.Fprint(os.Stderr, "Error: Base URL cannot be retrieved. The specification of Google side might be changed.\n")
-			os.Exit(1)
-		}
-	})
-	r.URL = baseurl + url
-	r.Client = &http.Client{Timeout: time.Duration(10) * time.Second}
-	res, err = r.fetchURL()
-	if err != nil {
-		return nil, err
-	}
-	doc, err = goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +114,7 @@ func (im *Imgdata) ImgFromURL(searchimage string) ([]string, error) {
 	var err error
 	r := &requestParams{
 		Method: "GET",
-		URL:    baseurl + "/searchbyimage?image_url=" + searchimage,
+		URL:    baseurl + "/search?tbm=isch&q=" + searchimage,
 		Data:   nil,
 		Client: &http.Client{
 			Timeout:       time.Duration(10) * time.Second,

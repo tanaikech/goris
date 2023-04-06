@@ -43,10 +43,14 @@ func handler(c *cli.Context) error {
 		}
 	}
 	if len(c.String("fromurl")) == 0 && len(c.String("fromfile")) > 0 {
-		results, err = ris.DefImg(c.Bool("webpages")).ImgFromFile(c.String("fromfile"))
-		if err != nil {
-			return err
-		}
+		fmt.Println("# Specification at Google side has been changed. By this, this command cannot be still modifying. So, in the current stage, this command cannot be used. I apologize for this situation.")
+		fmt.Println("# Please use goris s -u URL")
+		os.Exit(0)
+
+		// results, err = ris.DefImg(c.Bool("webpages")).ImgFromFile(c.String("fromfile"))
+		// if err != nil {
+		// 	return err
+		// }
 	}
 	if c.Bool("download") && (len(c.String("fromurl")) > 0 || len(c.String("fromfile")) > 0) && !c.Bool("webpages") {
 		err := ris.Download(results, n)
@@ -66,7 +70,7 @@ func createHelp() *cli.App {
 		{Name: "tanaike [ https://github.com/tanaikech/goris ] ", Email: "tanaike@hotmail.com"},
 	}
 	a.Usage = "Search for images with Google Reverse Image Search."
-	a.Version = "3.0.3"
+	a.Version = "3.0.4"
 
 	a.Commands = []cli.Command{
 		{
