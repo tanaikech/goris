@@ -116,4 +116,10 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 
   1. Modified go.mod and go.sum.
 
+<a name="v303"></a>
+
+- v3.0.3 (April 6, 2023)
+
+  1. Rebuild with the latest version.
+
 [TOP](#top)

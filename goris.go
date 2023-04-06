@@ -66,7 +66,7 @@ func createHelp() *cli.App {
 		{Name: "tanaike [ https://github.com/tanaikech/goris ] ", Email: "tanaike@hotmail.com"},
 	}
 	a.Usage = "Search for images with Google Reverse Image Search."
-	a.Version = "3.0.2"
+	a.Version = "3.0.3"
 
 	a.Commands = []cli.Command{
 		{
