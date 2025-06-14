@@ -54,6 +54,10 @@ goris s -u https://stackoverflow.design/assets/img/logos/so/logo-stackoverflow.p
 Download searched images from an image file. Following sample downloads 10 searched images using an image file.
 
 ```bash
+goris s -u https://stackoverflow.design/assets/img/logos/so/logo-stackoverflow.png -d -n 10
+```
+
+```bash
 goris s -f [image file] -d -n 10
 ```
 
