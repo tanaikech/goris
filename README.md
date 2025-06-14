@@ -21,14 +21,14 @@ or
 Use go get.
 
 ```bash
-$ go install github.com/tanaikech/goris@latest
+go install github.com/tanaikech/goris@latest
 ```
 
 # IMPORTANT
 20230406: In the current stage, the specification for running the reverse image search was changed at Google side. I could modify the script for searching the images using an image URL. But, I have still not modified the script for searching the images using an image file. I'm sorry for this. Now, I am analyzing. When I could do it, I would like to modify this. So, in the current stage, please use the following command.
 
 ```bash
-$ goris s -u [image URL]
+goris s -u [image URL]
 ```
 
 # Usage
@@ -36,35 +36,35 @@ $ goris s -u [image URL]
 Search images from an image file. You can select number of output URLs using `-n`. The maximum number of output URLs is 100. (The current default value is 10. So when `-n` is not used, 10 URLs are returned.)
 
 ```bash
-$ goris s -f [image file] -n 50
+goris s -f [image file] -n 50
 ```
 
 Search images from an image URL.
 
 ```bash
-$ goris s -u [image URL]
+goris s -u [image URL]
 ```
 
 A simlpe test is as follows.
 
 ```bash
-$ goris s -u https://stackoverflow.design/assets/img/logos/so/logo-stackoverflow.png
+goris s -u https://stackoverflow.design/assets/img/logos/so/logo-stackoverflow.png
 ```
 
 Download searched images from an image file. Following sample downloads 10 searched images using an image file.
 
 ```bash
-$ goris s -f [image file] -d -n 10
+goris s -f [image file] -d -n 10
 ```
 
 Retrieve web pages with matching images on Google top page. When this is not used, images are retrieved.
 
 ```bash
-$ goris s -u [image URL] -w
+goris s -u [image URL] -w
 ```
 
 ```bash
-$ goris s -f [image file] -w
+goris s -f [image file] -w
 ```
 
 <a name="Licence"></a>
@@ -141,7 +141,7 @@ If you have any questions and commissions for me, feel free to tell me using e-m
   1. The specification for running the reverse image search was changed at Google side. By this, this application was also changed. But, in the current stage, an image file in the local PC cannot be searched while an image URL can be searched. Now, I am analyzing. When I could do it, I would like to modify this. So, in the current stage, please use the following command.
 
 	```bash
-	$ goris s -u URL
+	goris s -u URL
 	```
 
 - v3.0.5 (June 14, 2025)
