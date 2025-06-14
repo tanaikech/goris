@@ -1,6 +1,5 @@
 # goris
 
-[![Build Status](https://travis-ci.com/tanaikech/goris.svg?branch=master)](https://travis-ci.com/tanaikech/goris)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENCE)
 
 <a name="top"></a>
@@ -44,6 +43,12 @@ Search images from an image URL.
 
 ```bash
 $ goris s -u [image URL]
+```
+
+A simlpe test is as follows.
+
+```bash
+$ goris s -u https://stackoverflow.design/assets/img/logos/so/logo-stackoverflow.png
 ```
 
 Download searched images from an image file. Following sample downloads 10 searched images using an image file.
@@ -138,5 +143,10 @@ If you have any questions and commissions for me, feel free to tell me using e-m
 	```bash
 	$ goris s -u URL
 	```
+
+- v3.0.5 (June 14, 2025)
+
+  1. I updated goris because the specification for running the reverse image search was changed on the Google side.
+  2. Rebuild goris by go1.24.4.
 
 [TOP](#top)

@@ -72,7 +72,7 @@ func (r *requestParams) getURLs(res *http.Response, imWebPage bool) ([]string, e
 	if err != nil {
 		return nil, err
 	}
-	reg1 := regexp.MustCompile("key: 'ds:1'")
+	reg1 := regexp.MustCompile(`google\.kEXPI`)
 	reg2 := regexp.MustCompile(`"(https?:\/\/.+?)",\d+,\d+`)
 	reg3 := regexp.MustCompile(`https:\/\/encrypted\-tbn0`)
 	reg4 := regexp.MustCompile(`"(https?:\/\/.+?)"`)
